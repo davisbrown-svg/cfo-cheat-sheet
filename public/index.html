@@ -1,0 +1,209 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>CFO Cheat Sheet — MAE ENTR</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="styles.css" />
+</head>
+<body>
+  <!-- TOP NAV -->
+  <nav class="topnav">
+    <div class="topnav-left">
+      <div class="logo-mark">
+        <svg width="28" height="28" viewBox="0 0 28 28" fill="none">
+          <circle cx="14" cy="14" r="13" stroke="#0070D2" stroke-width="2"/>
+          <path d="M8 14h12M14 8v12" stroke="#0070D2" stroke-width="2" stroke-linecap="round"/>
+          <circle cx="14" cy="14" r="3" fill="#0070D2"/>
+        </svg>
+      </div>
+      <span class="logo-text">CFO Cheat Sheet</span>
+      <span class="logo-badge">MAE ENTR · Flynn Org</span>
+    </div>
+    <div class="topnav-tabs">
+      <button class="nav-tab active" data-page="cheatsheet">
+        <span class="tab-icon">📊</span> Cheat Sheet
+      </button>
+      <button class="nav-tab" data-page="tenk">
+        <span class="tab-icon">📋</span> 10-K Guide
+      </button>
+<button class="nav-tab" data-page="painmap">
+        <span class="tab-icon">⚡</span> Pain Mapper
+      </button>
+    </div>
+    <div class="topnav-right">
+      <div class="live-indicator">
+        <span class="pulse-dot"></span>
+        <span>org62 connected</span>
+      </div>
+    </div>
+  </nav>
+
+  <!-- TICKER BAR -->
+  <div class="ticker-bar">
+    <div class="ticker-track">
+      <span class="ticker-item"><span class="ticker-label">TSR PRESSURE</span> → Agentforce Supply Chain</span>
+      <span class="ticker-sep">|</span>
+      <span class="ticker-item"><span class="ticker-label">HIGH CCC</span> → Order Management + Data Cloud</span>
+      <span class="ticker-sep">|</span>
+      <span class="ticker-item"><span class="ticker-label">SG&A RISING</span> → Agentforce Automation</span>
+      <span class="ticker-sep">|</span>
+      <span class="ticker-item"><span class="ticker-label">LOW FCF</span> → Lead with ROI Story</span>
+      <span class="ticker-sep">|</span>
+      <span class="ticker-item"><span class="ticker-label">EBITDA COMPRESSION</span> → Operational Efficiency Pitch</span>
+      <span class="ticker-sep">|</span>
+      <span class="ticker-item"><span class="ticker-label">DEBT COVENANTS</span> → OpEx Model, Salesforce Platform</span>
+      <span class="ticker-sep">|</span>
+      <span class="ticker-item"><span class="ticker-label">LOW NRR</span> → Service Cloud + Agentforce</span>
+      <span class="ticker-sep">|</span>
+      <span class="ticker-item"><span class="ticker-label">M&A INTEGRATION</span> → Platform Consolidation Story</span>
+      <span class="ticker-sep">|</span>
+      <span class="ticker-item"><span class="ticker-label">ROIC BELOW PEERS</span> → Transformation Urgency</span>
+      <span class="ticker-sep">|</span>
+      <span class="ticker-item"><span class="ticker-label">DSO HIGH</span> → Revenue Cloud + Collections</span>
+      <span class="ticker-sep">|</span>
+    </div>
+  </div>
+
+  <!-- PAGES -->
+  <main class="main-content">
+
+    <!-- PAGE 1: CHEAT SHEET -->
+    <section id="page-cheatsheet" class="page active">
+      <div class="page-header">
+        <div class="page-header-left">
+          <h1 class="page-title">The CFO Cheat Sheet</h1>
+          <p class="page-subtitle">Every financial term you need to know — and exactly how it maps to your pitch</p>
+        </div>
+        <div class="page-header-right">
+          <div class="category-filter">
+            <button class="filter-btn active" data-filter="all">All Terms</button>
+            <button class="filter-btn" data-filter="profitability">📊 Profitability</button>
+            <button class="filter-btn" data-filter="cashflow">💰 Cash Flow</button>
+            <button class="filter-btn" data-filter="growth">📈 Growth</button>
+            <button class="filter-btn" data-filter="efficiency">⚙️ Efficiency</button>
+            <button class="filter-btn" data-filter="risk">⚠️ Risk Signals</button>
+          </div>
+        </div>
+      </div>
+
+      <div class="terms-grid" id="terms-grid">
+        <!-- Rendered by JS -->
+      </div>
+    </section>
+
+    <!-- PAGE 2: 10-K GUIDE -->
+    <section id="page-tenk" class="page">
+      <div class="page-header">
+        <div class="page-header-left">
+          <h1 class="page-title">What's in a 10-K</h1>
+          <p class="page-subtitle">How to read a public company's annual report as a seller — in 10 minutes</p>
+        </div>
+      </div>
+
+      <!-- 10-K ANALYZER -->
+      <div class="analyzer-wrap">
+        <div class="analyzer-header">
+          <div>
+            <div class="analyzer-title">📄 10-K Signal Analyzer</div>
+            <div class="analyzer-subtitle">Paste any section of a 10-K (Risk Factors, MD&A, or full text) and get an instant seller's briefing</div>
+          </div>
+          <button class="analyzer-clear-btn" id="analyzer-clear" style="display:none;">Clear</button>
+        </div>
+        <textarea id="tenk-input" class="tenk-textarea" placeholder="Paste 10-K text here — try Item 1A (Risk Factors) or Item 7 (MD&A) for best results…"></textarea>
+        <div class="analyzer-actions">
+          <button class="analyze-btn" id="analyze-btn">Analyze Filing →</button>
+          <span class="analyzer-hint" id="analyzer-char-count"></span>
+        </div>
+        <div id="analyzer-results" class="analyzer-results" style="display:none;"></div>
+      </div>
+
+      <div class="tenk-layout">
+        <div class="tenk-structure">
+          <h2 class="section-heading">📄 Standard 10-K Structure</h2>
+          <div class="tenk-items" id="tenk-structure">
+            <!-- Rendered by JS -->
+          </div>
+        </div>
+
+        <div class="tenk-signals-panel">
+          <h2 class="section-heading">🔍 Signals to Hunt in Every 10-K</h2>
+          <div class="signal-cards" id="tenk-signals">
+            <!-- Rendered by JS -->
+          </div>
+
+          <div class="tenk-pro-tips">
+            <h2 class="section-heading">⚡ Pro Tips from the Field</h2>
+            <div class="pro-tips-list">
+              <div class="pro-tip">
+                <span class="tip-number">01</span>
+                <div>
+                  <strong>Start with Item 1A, not Item 7.</strong>
+                  Risk Factors are where management tells you what scares them. That's your compelling event menu. Read every single one.
+                </div>
+              </div>
+              <div class="pro-tip">
+                <span class="tip-number">02</span>
+                <div>
+                  <strong>Compare 3 years, not just the latest.</strong>
+                  A single year is a snapshot. Three years reveals trends — and trends are where the pressure lives.
+                </div>
+              </div>
+              <div class="pro-tip">
+                <span class="tip-number">03</span>
+                <div>
+                  <strong>Cross-reference MD&A with the numbers.</strong>
+                  If Item 7 says "operational efficiency" but SG&A went up 400bps, that's your opening — they know the problem, they don't have the answer.
+                </div>
+              </div>
+              <div class="pro-tip">
+                <span class="tip-number">04</span>
+                <div>
+                  <strong>Restructuring charges = urgency mode.</strong>
+                  If you see restructuring on the income statement, leadership is already cutting. Automation isn't a nice-to-have — it's the plan.
+                </div>
+              </div>
+              <div class="pro-tip">
+                <span class="tip-number">05</span>
+                <div>
+                  <strong>Search for "digital transformation" in the filing.</strong>
+                  If they're talking about it, they're spending on it. Get on the list before the budget is committed.
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+<!-- PAGE 4: PAIN MAPPER -->
+    <section id="page-painmap" class="page">
+      <div class="page-header">
+        <div class="page-header-left">
+          <h1 class="page-title">Product ↔ CFO Pain Mapper</h1>
+          <p class="page-subtitle">What they say → what they mean → what you sell</p>
+        </div>
+      </div>
+
+      <div class="pain-map-table-wrap">
+        <table class="pain-map-table" id="pain-map-table">
+          <!-- Rendered by JS -->
+        </table>
+      </div>
+
+      <div class="pain-map-cards">
+        <h2 class="section-heading">Conversation Starters by Pressure Type</h2>
+        <div class="convo-cards-grid" id="convo-cards">
+          <!-- Rendered by JS -->
+        </div>
+      </div>
+    </section>
+
+  </main>
+
+  <script src="app.js"></script>
+</body>
+</html>
