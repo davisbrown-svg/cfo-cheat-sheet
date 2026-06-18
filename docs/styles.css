@@ -121,6 +121,31 @@ body {
   flex-shrink: 0;
 }
 
+.nav-user {
+  font-size: 12px;
+  color: var(--text-secondary);
+  font-family: var(--mono);
+  margin-right: 8px;
+}
+
+.nav-logout-btn {
+  font-size: 11px;
+  padding: 4px 10px;
+  border-radius: 5px;
+  border: 1px solid var(--border);
+  background: transparent;
+  color: var(--text-dim);
+  cursor: pointer;
+  font-family: var(--sans);
+  margin-right: 12px;
+  transition: all 0.15s ease;
+}
+
+.nav-logout-btn:hover {
+  border-color: var(--accent-red);
+  color: var(--accent-red);
+}
+
 .live-indicator {
   display: flex;
   align-items: center;
@@ -1502,6 +1527,76 @@ body {
   padding: 30px;
   color: var(--text-dim);
   font-size: 13px;
+}
+
+/* ── LOGIN SCREEN ── */
+.login-screen {
+  position: fixed;
+  inset: 0;
+  z-index: 999;
+  background: var(--bg-base);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 20px;
+}
+
+.login-card {
+  background: var(--bg-card);
+  border: 1px solid var(--border-bright);
+  border-radius: 16px;
+  padding: 40px 36px;
+  width: 100%;
+  max-width: 380px;
+  text-align: center;
+  box-shadow: 0 32px 80px rgba(0,0,0,0.5);
+}
+
+.login-logo {
+  margin-bottom: 16px;
+  display: flex;
+  justify-content: center;
+}
+
+.login-title {
+  font-size: 22px;
+  font-weight: 800;
+  color: var(--text-primary);
+  letter-spacing: -0.03em;
+  margin-bottom: 6px;
+}
+
+.login-subtitle {
+  font-size: 12px;
+  color: var(--text-secondary);
+  margin-bottom: 28px;
+  font-family: var(--mono);
+}
+
+.login-btn {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+  width: 100%;
+  padding: 12px 20px;
+  background: var(--sf-blue);
+  border: none;
+  border-radius: 10px;
+  color: #fff;
+  font-size: 14px;
+  font-weight: 600;
+  cursor: pointer;
+  font-family: var(--sans);
+  transition: background 0.15s ease;
+  margin-bottom: 14px;
+}
+
+.login-btn:hover { background: var(--sf-blue-light); }
+
+.login-note {
+  font-size: 11px;
+  color: var(--text-dim);
 }
 
 /* ── SCROLLBAR ── */
