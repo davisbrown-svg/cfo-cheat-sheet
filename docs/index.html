@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>CFO Cheat Sheet — MAE ENTR</title>
+  <title>Buyer Cheat Sheet — MAE ENTR</title>
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet" />
@@ -48,12 +48,24 @@
     </div>
     <div class="topnav-tabs">
       <button class="nav-tab active" data-page="cheatsheet">
-        <span class="tab-icon">📊</span> Cheat Sheet
+        <span class="tab-icon">📊</span> CFO
+      </button>
+      <button class="nav-tab" data-page="supplychain">
+        <span class="tab-icon">🔗</span> SVP Supply Chain
+      </button>
+      <button class="nav-tab" data-page="cmo">
+        <span class="tab-icon">📣</span> CMO
+      </button>
+      <button class="nav-tab" data-page="cio">
+        <span class="tab-icon">💻</span> CIO
+      </button>
+      <button class="nav-tab" data-page="ceo">
+        <span class="tab-icon">🏆</span> CEO
       </button>
       <button class="nav-tab" data-page="tenk">
         <span class="tab-icon">📋</span> 10-K Guide
       </button>
-<button class="nav-tab" data-page="painmap">
+      <button class="nav-tab" data-page="painmap">
         <span class="tab-icon">⚡</span> Pain Mapper
       </button>
     </div>
@@ -115,6 +127,142 @@
 
       <div class="terms-grid" id="terms-grid">
         <!-- Rendered by JS -->
+      </div>
+    </section>
+
+    <!-- PAGE: SVP SUPPLY CHAIN -->
+    <section id="page-supplychain" class="page">
+      <div class="page-header">
+        <div class="page-header-left">
+          <h1 class="page-title">The SVP of Supply Chain Cheat Sheet</h1>
+          <p class="page-subtitle">What the CSCO cares about — and exactly how to open the conversation</p>
+        </div>
+        <div class="page-header-right">
+          <div class="category-filter" id="sc-filter">
+            <button class="filter-btn active" data-filter-persona="sc" data-filter="all">All Topics</button>
+            <button class="filter-btn" data-filter-persona="sc" data-filter="visibility">📡 Visibility</button>
+            <button class="filter-btn" data-filter-persona="sc" data-filter="efficiency">⚙️ Efficiency</button>
+            <button class="filter-btn" data-filter-persona="sc" data-filter="resilience">🛡️ Resilience</button>
+            <button class="filter-btn" data-filter-persona="sc" data-filter="cost">💰 Cost</button>
+          </div>
+        </div>
+      </div>
+      <div class="terms-grid" id="sc-grid"></div>
+      <div class="persona-bottom-grid">
+        <div class="persona-opener-card">
+          <h2 class="section-heading">🗣️ How to Open the Conversation</h2>
+          <div id="sc-openers"></div>
+        </div>
+        <div class="persona-avoid-card">
+          <h2 class="section-heading">🚫 What NOT to Say</h2>
+          <div id="sc-avoid"></div>
+        </div>
+      </div>
+      <div class="pain-map-table-wrap" style="margin-top:32px;">
+        <h2 class="section-heading" style="margin-bottom:14px;">Product ↔ Supply Chain Pain Mapper</h2>
+        <table class="pain-map-table" id="sc-pain-table"></table>
+      </div>
+    </section>
+
+    <!-- PAGE: CMO -->
+    <section id="page-cmo" class="page">
+      <div class="page-header">
+        <div class="page-header-left">
+          <h1 class="page-title">The CMO Cheat Sheet</h1>
+          <p class="page-subtitle">What the Chief Marketing Officer cares about — and exactly how to open the conversation</p>
+        </div>
+        <div class="page-header-right">
+          <div class="category-filter" id="cmo-filter">
+            <button class="filter-btn active" data-filter-persona="cmo" data-filter="all">All Topics</button>
+            <button class="filter-btn" data-filter-persona="cmo" data-filter="measurement">📊 Measurement</button>
+            <button class="filter-btn" data-filter-persona="cmo" data-filter="pipeline">📈 Pipeline</button>
+            <button class="filter-btn" data-filter-persona="cmo" data-filter="personalization">🎯 Personalization</button>
+            <button class="filter-btn" data-filter-persona="cmo" data-filter="ai">🤖 AI & Data</button>
+          </div>
+        </div>
+      </div>
+      <div class="terms-grid" id="cmo-grid"></div>
+      <div class="persona-bottom-grid">
+        <div class="persona-opener-card">
+          <h2 class="section-heading">🗣️ How to Open the Conversation</h2>
+          <div id="cmo-openers"></div>
+        </div>
+        <div class="persona-avoid-card">
+          <h2 class="section-heading">🚫 What NOT to Say</h2>
+          <div id="cmo-avoid"></div>
+        </div>
+      </div>
+      <div class="pain-map-table-wrap" style="margin-top:32px;">
+        <h2 class="section-heading" style="margin-bottom:14px;">Product ↔ CMO Pain Mapper</h2>
+        <table class="pain-map-table" id="cmo-pain-table"></table>
+      </div>
+    </section>
+
+    <!-- PAGE: CIO -->
+    <section id="page-cio" class="page">
+      <div class="page-header">
+        <div class="page-header-left">
+          <h1 class="page-title">The CIO Cheat Sheet</h1>
+          <p class="page-subtitle">What the Chief Information Officer cares about — and exactly how to open the conversation</p>
+        </div>
+        <div class="page-header-right">
+          <div class="category-filter" id="cio-filter">
+            <button class="filter-btn active" data-filter-persona="cio" data-filter="all">All Topics</button>
+            <button class="filter-btn" data-filter-persona="cio" data-filter="ai">🤖 AI & Data</button>
+            <button class="filter-btn" data-filter-persona="cio" data-filter="security">🔐 Security</button>
+            <button class="filter-btn" data-filter-persona="cio" data-filter="simplification">🧹 Simplification</button>
+            <button class="filter-btn" data-filter-persona="cio" data-filter="delivery">🚀 Delivery</button>
+          </div>
+        </div>
+      </div>
+      <div class="terms-grid" id="cio-grid"></div>
+      <div class="persona-bottom-grid">
+        <div class="persona-opener-card">
+          <h2 class="section-heading">🗣️ How to Open the Conversation</h2>
+          <div id="cio-openers"></div>
+        </div>
+        <div class="persona-avoid-card">
+          <h2 class="section-heading">🚫 What NOT to Say</h2>
+          <div id="cio-avoid"></div>
+        </div>
+      </div>
+      <div class="pain-map-table-wrap" style="margin-top:32px;">
+        <h2 class="section-heading" style="margin-bottom:14px;">Product ↔ CIO Pain Mapper</h2>
+        <table class="pain-map-table" id="cio-pain-table"></table>
+      </div>
+    </section>
+
+    <!-- PAGE: CEO -->
+    <section id="page-ceo" class="page">
+      <div class="page-header">
+        <div class="page-header-left">
+          <h1 class="page-title">The CEO Cheat Sheet</h1>
+          <p class="page-subtitle">What the Chief Executive Officer cares about — and exactly how to open the conversation</p>
+        </div>
+        <div class="page-header-right">
+          <div class="category-filter" id="ceo-filter">
+            <button class="filter-btn active" data-filter-persona="ceo" data-filter="all">All Topics</button>
+            <button class="filter-btn" data-filter-persona="ceo" data-filter="growth">📈 Growth</button>
+            <button class="filter-btn" data-filter-persona="ceo" data-filter="transformation">🔄 Transformation</button>
+            <button class="filter-btn" data-filter-persona="ceo" data-filter="competition">🏆 Competition</button>
+            <button class="filter-btn" data-filter-persona="ceo" data-filter="execution">⚡ Execution</button>
+          </div>
+        </div>
+      </div>
+      <div class="terms-grid" id="ceo-grid"></div>
+      <div class="persona-bottom-grid">
+        <div class="persona-opener-card">
+          <h2 class="section-heading">🗣️ How to Open the Conversation</h2>
+          <div id="ceo-openers"></div>
+        </div>
+        <div class="persona-avoid-card">
+          <h2 class="section-heading">🚫 What NOT to Say</h2>
+          <div id="ceo-avoid"></div>
+        </div>
+      </div>
+      <div class="pain-map-table-wrap" style="margin-top:32px;">
+        <h2 class="section-heading" style="margin-bottom:14px;">Product ↔ CEO Pain Mapper</h2>
+        <table class="pain-map-table" id="ceo-pain-table"></table>
       </div>
     </section>
 

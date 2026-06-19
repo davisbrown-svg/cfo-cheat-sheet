@@ -1389,7 +1389,591 @@ document.getElementById('analyzer-clear').addEventListener('click', () => {
   document.getElementById('analyzer-clear').style.display = 'none';
 });
 
+// ── DATA: SVP SUPPLY CHAIN ───────────────────────────────────
+const SC_TERMS = [
+  {
+    name: 'Cash Conversion Cycle (CCC)',
+    abbrev: 'CCC',
+    category: 'cost',
+    categoryLabel: '💰 Cost',
+    definition: 'Days Inventory Outstanding + Days Sales Outstanding − Days Payable Outstanding. The number of days cash is trapped between paying suppliers and collecting from customers.',
+    why: 'This is the supply chain exec\'s most watched metric. Every extra day costs the company real working capital. Pull their CCC from the 10-K, compare to sector peers, and open with: "Your CCC is X days vs. Y for your closest competitors — here\'s where Salesforce compresses it."',
+    products: ['Data Cloud', 'Order Management', 'Agentforce Operations'],
+  },
+  {
+    name: 'Inventory Turnover / Days Inventory Outstanding',
+    abbrev: 'DIO / Inv. Turn',
+    category: 'efficiency',
+    categoryLabel: '⚙️ Efficiency',
+    definition: 'How many times inventory is sold and replaced in a period. DIO = (Avg Inventory / COGS) × 365. Low turns mean excess stock, obsolescence risk, and cash trapped on warehouse shelves.',
+    why: 'Low inventory turns signal either poor demand forecasting or supply chain rigidity. Your pitch: Data Cloud + Agentforce Operations enabling real-time demand signals that feed directly into replenishment decisions — eliminating the manual spreadsheet loop they\'re almost certainly running today.',
+    products: ['Data Cloud', 'Agentforce Operations', 'MFG Cloud'],
+  },
+  {
+    name: 'Supplier On-Time Delivery (OTD)',
+    abbrev: 'OTD %',
+    category: 'resilience',
+    categoryLabel: '🛡️ Resilience',
+    definition: 'The percentage of supplier deliveries that arrive on the promised date and in full. A leading indicator of production line stoppages and customer service failures downstream.',
+    why: 'Low OTD forces buffer inventory and reactive firefighting. The CSCO is almost always chasing this metric. Agentforce Operations can automate supplier follow-ups, escalation workflows, and exception handling — converting a manual daily war room into an automated process.',
+    products: ['Agentforce Operations', 'MuleSoft', 'Manufacturing Cloud'],
+  },
+  {
+    name: 'Demand Forecast Accuracy',
+    abbrev: 'Forecast Acc.',
+    category: 'visibility',
+    categoryLabel: '📡 Visibility',
+    definition: 'How closely predicted demand matches actual demand. Typically measured as 1 − (Mean Absolute Percentage Error). Poor forecast accuracy causes either stockouts or overstock — both destroy margin.',
+    why: 'Most supply chain teams are forecasting in Excel or legacy ERP. Data Cloud unifies CRM pipeline data, sales history, and external signals into a live demand picture. The CSCO doesn\'t know that their sales team\'s CRM data could dramatically improve their forecast — this is your insight.',
+    products: ['Data Cloud', 'Einstein AI', 'Agentforce Operations'],
+  },
+  {
+    name: 'Order-to-Cash (OTC) Cycle Time',
+    abbrev: 'OTC',
+    category: 'efficiency',
+    categoryLabel: '⚙️ Efficiency',
+    definition: 'The end-to-end time from a customer placing an order to the company receiving payment. Longer OTC = more working capital consumed, more errors, more customer frustration.',
+    why: 'OTC slowdowns are usually caused by manual handoffs between sales, supply chain, and finance. Order Management + Revenue Cloud automates the handoffs, catches exceptions before they become escalations, and gives every team a unified view of each order\'s status.',
+    products: ['Order Management', 'Revenue Cloud', 'Agentforce'],
+  },
+  {
+    name: 'Supply Chain Resilience / SCRM',
+    abbrev: 'SCRM',
+    category: 'resilience',
+    categoryLabel: '🛡️ Resilience',
+    definition: 'Supply Chain Risk Management — the capability to identify, assess, and respond to disruptions across the supply network. Increasingly driven by AI-based scenario modeling.',
+    why: 'Post-COVID, every board is asking about supply chain resilience. CSCOs need to show a credible answer. Agentforce Operations + Data Cloud enables real-time supplier risk scoring, automated scenario modeling, and proactive escalation before a disruption becomes a crisis.',
+    products: ['Agentforce Operations', 'Data Cloud', 'MuleSoft'],
+  },
+  {
+    name: 'Total Cost of Ownership (TCO) — Procurement',
+    abbrev: 'TCO',
+    category: 'cost',
+    categoryLabel: '💰 Cost',
+    definition: 'The full lifecycle cost of a purchased input: unit price + freight + quality rework + inventory carrying cost + supplier management overhead. Purchasing decisions made on unit price alone consistently miss the real cost.',
+    why: 'Most procurement organizations optimize on price. CSCOs know the real cost is total lifecycle. Data Cloud enables a TCO view across all supplier inputs — surfacing the hidden cost drivers that no ERP shows natively.',
+    products: ['Data Cloud', 'Agentforce Operations', 'Manufacturing Cloud'],
+  },
+  {
+    name: 'Landed Cost & Trade Compliance',
+    abbrev: 'Landed Cost',
+    category: 'cost',
+    categoryLabel: '💰 Cost',
+    definition: 'The total cost of a product delivered to a facility, including freight, tariffs, customs duties, insurance, and handling. In a tariff-volatile environment, this changes daily.',
+    why: 'With tariff volatility at record highs, landed cost calculations are being redone constantly. The supply chain exec who has real-time landed cost visibility has a competitive advantage in sourcing decisions. This is a Data Cloud + integration story that very few AEs bring to this buyer.',
+    products: ['Data Cloud', 'MuleSoft', 'Agentforce Operations'],
+  },
+  {
+    name: 'Operational Equipment Effectiveness (OEE)',
+    abbrev: 'OEE',
+    category: 'visibility',
+    categoryLabel: '📡 Visibility',
+    definition: 'Availability × Performance × Quality — the gold standard for measuring manufacturing productivity. 100% OEE means running at full speed with zero downtime and zero defects. World class = 85%.',
+    why: 'Low OEE in manufacturing is often a maintenance data problem — reactive maintenance instead of predictive. Field Service Cloud with IoT integration enables predictive maintenance workflows that prevent unplanned downtime. Frame it as: "What\'s one point of OEE worth to your throughput?"',
+    products: ['Field Service Cloud', 'Manufacturing Cloud', 'Agentforce Operations'],
+  },
+];
+
+const SC_OPENERS = [
+  {
+    question: 'Your CCC is X days vs. Y for your closest competitors. Walk me through where you think the most time gets lost — is it on the inventory side, the AR side, or somewhere in the middle?',
+    why: 'Uses their own public data to anchor the conversation. Forces them to name the bottleneck before you pitch.',
+  },
+  {
+    question: 'When your demand forecast misses — which direction does it usually miss in? Overstock or stockout?',
+    why: 'Overstock = inventory visibility problem (Data Cloud story). Stockout = demand sensing problem (Einstein AI). The answer tells you exactly which product to lead with.',
+  },
+  {
+    question: 'How much of your supplier communication and exception management is still running on email today?',
+    why: 'Almost universally the answer is "too much." Opens Agentforce Operations — automated supplier follow-up, exception handling, escalation workflows.',
+  },
+  {
+    question: 'If your sales team\'s pipeline data could feed your demand forecast in real time, what would that change about how you run your S&OP process?',
+    why: 'Most CSCOs have never been told their CRM data could improve their forecast. This is an insight that immediately differentiates you from every other vendor in the room.',
+  },
+];
+
+const SC_AVOID = [
+  {
+    text: '"We can do everything" — leading with product breadth',
+    instead: 'Lead with one specific metric from their 10-K (CCC, DIO, OTD) and show you\'ve done the math.',
+  },
+  {
+    text: '"Our CRM can help your supply chain" without specifics',
+    instead: 'Name the specific integration: "Data Cloud unifies your ERP demand data with your CRM pipeline to produce a real-time forecast."',
+  },
+  {
+    text: '"We integrate with everything" as a feature',
+    instead: 'The CSCO doesn\'t care about integration capability — they care about outcomes. "Companies running this model reduced their DIO by X days."',
+  },
+  {
+    text: 'Talking about Marketing Cloud or Service Cloud in the opening',
+    instead: 'Stay in their world: inventory, suppliers, demand, fulfillment. Cross-sell only after you\'ve solved their problem.',
+  },
+];
+
+const SC_PAIN_MAP = [
+  { signal: 'High Inventory / Low Turns', says: '"We have too much working capital tied up"', means: 'Poor demand forecasting or supply planning rigidity', solutions: ['Data Cloud', 'Agentforce Operations', 'Einstein AI'] },
+  { signal: 'Supplier OTD Failures', says: '"Our supply chain is too fragile"', means: 'Manual exception management; no proactive supplier visibility', solutions: ['Agentforce Operations', 'MuleSoft', 'Manufacturing Cloud'] },
+  { signal: 'Forecast Accuracy Misses', says: '"We\'re always firefighting"', means: 'Sales and supply chain data are siloed — no unified demand picture', solutions: ['Data Cloud', 'Einstein AI', 'Agentforce'] },
+  { signal: 'Manual S&OP Process', says: '"Our planning process takes too long"', means: 'Excel-based S&OP with week-long cycles and stale data', solutions: ['Agentforce Operations', 'Data Cloud', 'Einstein Forecasting'] },
+  { signal: 'High Landed Cost / Tariff Exposure', says: '"We\'re dealing with tariff volatility"', means: 'No real-time landed cost visibility; sourcing decisions made on stale data', solutions: ['Data Cloud', 'MuleSoft', 'Agentforce Operations'] },
+  { signal: 'Long Order-to-Cash Cycle', says: '"Customers complain about order visibility"', means: 'Manual handoffs between supply chain, sales, and finance', solutions: ['Order Management', 'Revenue Cloud', 'Agentforce'] },
+];
+
+// ── DATA: CMO ─────────────────────────────────────────────────
+const CMO_TERMS = [
+  {
+    name: 'Marketing ROI / ROAS',
+    abbrev: 'MROI / ROAS',
+    category: 'measurement',
+    categoryLabel: '📊 Measurement',
+    definition: 'Return on Marketing Investment / Return on Ad Spend. The revenue generated per dollar of marketing investment. The CMO\'s most watched metric — and the one most CFOs are demanding accountability on.',
+    why: 'Per Salesforce\'s own research (FY26), measuring marketing impact is CMOs\' #1 pain point. The CFO wants hard attribution numbers. Marketing Cloud + Data Cloud closes the loop between campaign spend and closed revenue — showing exactly which campaigns drove pipeline and closed deals.',
+    products: ['Marketing Cloud', 'Data Cloud', 'Agentforce for Marketing'],
+  },
+  {
+    name: 'Marketing-Attributed Pipeline',
+    abbrev: 'MAP %',
+    category: 'pipeline',
+    categoryLabel: '📈 Pipeline',
+    definition: 'The percentage of total sales pipeline that originated from or was influenced by marketing activities. A KPI used to justify marketing budget and demonstrate cross-functional contribution.',
+    why: 'CMOs live and die by their pipeline contribution number. If marketing and sales run on disconnected systems, marketing can\'t prove attribution. Marketing Cloud + Sales Cloud on one platform = the only way to show the CFO that marketing is creating pipeline, not just impressions.',
+    products: ['Marketing Cloud', 'Sales Cloud', 'Einstein Attribution'],
+  },
+  {
+    name: 'Customer Acquisition Cost (CAC)',
+    abbrev: 'CAC',
+    category: 'measurement',
+    categoryLabel: '📊 Measurement',
+    definition: 'Total sales and marketing spend divided by number of new customers acquired in a period. Measures how efficiently the company is converting marketing investment into new logos.',
+    why: 'Rising CAC is a board-level alarm. If it takes $50k to acquire a customer who generates $40k in year-one revenue, the math doesn\'t work. Marketing Cloud helps CMOs reduce CAC by targeting higher-propensity buyers and eliminating wasted spend on low-intent audiences.',
+    products: ['Marketing Cloud', 'Data Cloud', 'Einstein AI'],
+  },
+  {
+    name: 'Marketing Tech Stack Sprawl',
+    abbrev: 'MarTech',
+    category: 'ai',
+    categoryLabel: '🤖 AI & Data',
+    definition: 'The proliferation of point solutions across the marketing organization: separate tools for email, social, ads, analytics, ABM, events, and more. Most enterprise marketing orgs run 30–50 tools.',
+    why: 'FY26 research shows CMOs rank MarTech consolidation as a top priority. Every disconnected tool is a data silo that prevents personalization and attribution. Salesforce\'s pitch: replace 5–10 tools with Marketing Cloud + Data Cloud, recover the integration cost, and get a unified customer view for free.',
+    products: ['Marketing Cloud', 'Data Cloud', 'Agentforce for Marketing'],
+  },
+  {
+    name: 'Personalization at Scale',
+    abbrev: 'P@S',
+    category: 'personalization',
+    categoryLabel: '🎯 Personalization',
+    definition: 'The ability to deliver individually tailored content, offers, and experiences to each customer in real time — across email, web, ads, and in-person channels — without manual segmentation.',
+    why: 'CMOs want to personalize but are doing manual segmentation that takes days. Data Cloud unified profiles + Agentforce for Marketing = real-time, AI-driven 1:1 personalization at any scale. Lead with: "Up to 40% increase in marketing team productivity" from the Salesforce research data.',
+    products: ['Data Cloud', 'Marketing Cloud', 'Agentforce for Marketing'],
+  },
+  {
+    name: 'Demand Generation Efficiency',
+    abbrev: 'DemandGen',
+    category: 'pipeline',
+    categoryLabel: '📈 Pipeline',
+    definition: 'The ability to generate qualified sales pipeline from marketing spend. The CMO owns top-of-funnel — their job is to fill the sales team\'s pipeline with quality leads, not just any leads.',
+    why: 'One of CMOs\' biggest complaints: running acquisition campaigns to existing customers because the data is fragmented. Data Cloud solves this — unified customer profiles mean marketing always knows who is already a customer and who is a net-new prospect.',
+    products: ['Data Cloud', 'Marketing Cloud', 'Sales Cloud'],
+  },
+  {
+    name: 'Sales-Marketing Alignment',
+    abbrev: 'SMarketing',
+    category: 'pipeline',
+    categoryLabel: '📈 Pipeline',
+    definition: 'The degree to which sales and marketing teams share common goals, data, and processes. Misalignment causes lead leakage, duplicated effort, and attribution disputes.',
+    why: 'The handoff between marketing and sales is where pipeline goes to die. If marketing passes a lead and sales doesn\'t see it for 3 days, the deal is cold. Marketing Cloud + Sales Cloud on the same platform = instant, automated lead routing with full visibility for both teams.',
+    products: ['Marketing Cloud', 'Sales Cloud', 'Agentforce'],
+  },
+  {
+    name: 'AI-Powered Content & Campaign Creation',
+    abbrev: 'GenAI Marketing',
+    category: 'ai',
+    categoryLabel: '🤖 AI & Data',
+    definition: 'Using generative AI to produce on-brand content, personalized email copy, ad variants, and campaign assets at speed and scale — reducing dependence on agency or in-house creative resources.',
+    why: 'FY26 research shows marketing teams are actively experimenting with AI workflows but don\'t have a governed enterprise approach. Agentforce for Marketing provides AI content generation within the Einstein Trust Layer — so the CMO can scale content production without security or brand risk.',
+    products: ['Agentforce for Marketing', 'Marketing Cloud', 'Einstein Trust Layer'],
+  },
+];
+
+const CMO_OPENERS = [
+  {
+    question: 'When the CFO asks you to show marketing\'s contribution to revenue, what does that conversation look like today — and where does the data fall short?',
+    why: 'CMOs universally struggle with attribution. Opens the Data Cloud + Einstein Attribution story without you having to pitch it.',
+  },
+  {
+    question: 'How many tools is your marketing team managing today? And how many of those talk to each other without manual intervention?',
+    why: 'Opens MarTech consolidation. The answer is almost always painful. Let them say it before you offer a solution.',
+  },
+  {
+    question: 'When a lead comes in from marketing and nothing happens on the sales side for 48 hours, what\'s the process — and whose problem is it?',
+    why: 'Surfaces sales-marketing alignment failures. If they laugh, that\'s your Sales Cloud + Marketing Cloud same-platform story.',
+  },
+  {
+    question: 'How are you thinking about using AI in your marketing org — and where are you most nervous about brand safety or compliance risk?',
+    why: 'FY26 data shows CMOs are experimenting but cautious. Einstein Trust Layer + Agentforce for Marketing is the answer to both halves of that question.',
+  },
+];
+
+const CMO_AVOID = [
+  {
+    text: 'Opening with "We have a great email platform"',
+    instead: 'Lead with attribution and pipeline contribution — that\'s what the CMO\'s CFO is asking about.',
+  },
+  {
+    text: 'Talking about Marketing Cloud without Data Cloud',
+    instead: 'In FY26, personalization and attribution without unified data is table stakes. Always pair Marketing Cloud + Data Cloud.',
+  },
+  {
+    text: '"We can replace your marketing stack"',
+    instead: '"We can consolidate your most fragmented tools and give you a unified customer view" — specific is credible, vague is threatening.',
+  },
+  {
+    text: 'Ignoring the CFO relationship',
+    instead: 'CMOs report to CEOs but are increasingly pressured by CFOs. Frame every marketing investment as revenue impact, not campaign performance.',
+  },
+];
+
+const CMO_PAIN_MAP = [
+  { signal: 'Can\'t Prove Marketing ROI', says: '"The CFO keeps asking me to justify spend"', means: 'Disconnected tools block full-funnel attribution', solutions: ['Marketing Cloud', 'Data Cloud', 'Einstein Attribution'] },
+  { signal: 'Running Campaigns to Existing Customers', says: '"Our data quality is a problem"', means: 'Fragmented customer data — no unified profile', solutions: ['Data Cloud', 'Marketing Cloud', 'Agentforce'] },
+  { signal: 'MarTech Sprawl / High Tool Costs', says: '"We have too many tools that don\'t talk"', means: 'Point solution accumulation with no single source of truth', solutions: ['Marketing Cloud', 'Data Cloud', 'Platform Consolidation'] },
+  { signal: 'Lead Leakage at Handoff', says: '"Marketing and sales aren\'t aligned"', means: 'Manual lead routing creates 48–72 hour delays and lost pipeline', solutions: ['Marketing Cloud', 'Sales Cloud', 'Agentforce'] },
+  { signal: 'Slow Content Production', says: '"We can\'t produce content fast enough"', means: 'In-house or agency bottleneck limits campaign velocity', solutions: ['Agentforce for Marketing', 'Marketing Cloud', 'Einstein Trust Layer'] },
+  { signal: 'AI Adoption Pressure', says: '"Leadership wants AI in our marketing"', means: 'CEO/CTO mandate but no governed enterprise approach yet', solutions: ['Agentforce for Marketing', 'Einstein Trust Layer', 'Data Cloud'] },
+];
+
+// ── DATA: CIO ─────────────────────────────────────────────────
+const CIO_TERMS = [
+  {
+    name: 'Agentic AI / Digital Labor',
+    abbrev: 'Agentforce',
+    category: 'ai',
+    categoryLabel: '🤖 AI & Data',
+    definition: 'AI agents that autonomously complete multi-step tasks — not just answering questions, but taking actions, making decisions, and collaborating with humans across business processes.',
+    why: 'Per Salesforce CIO research (FY26), 50% of CIOs are already investing in Agentic AI and 24% are experimenting. The CIO is being asked to make AI "real." Your job: transition the conversation from "AI vision" to "AI implementation" — data readiness, governance, and practical deployment timelines.',
+    products: ['Agentforce', 'Einstein Trust Layer', 'Data Cloud'],
+  },
+  {
+    name: 'Data Readiness for AI',
+    abbrev: 'Data Readiness',
+    category: 'ai',
+    categoryLabel: '🤖 AI & Data',
+    definition: 'The degree to which an organization\'s data is clean, unified, governed, and accessible enough to power AI use cases. Without it, AI produces inaccurate or harmful outputs.',
+    why: 'FY26 research: 94% of CIOs feel confident about AI steps but only 53% have their data prepared. This gap is your entry. "Your AI roadmap is only as good as your data foundation" — Data Cloud closes the gap between where they are and where AI needs them to be.',
+    products: ['Data Cloud', 'Agentforce', 'MuleSoft'],
+  },
+  {
+    name: 'IT Simplification / Platform Consolidation',
+    abbrev: 'IT Simplification',
+    category: 'simplification',
+    categoryLabel: '🧹 Simplification',
+    definition: 'The strategic reduction of the number of technology platforms, vendors, and integrations an organization manages. The antidote to point-solution sprawl and its associated integration cost, security risk, and operational overhead.',
+    why: 'CIOs rank managing too many point solutions as a top pain. Salesforce moved from 6th to 1st in CIO preference for this category in FY26. Your message: "One platform for AI, CRM, data, and automation — replacing 4–6 point solutions that each have their own integration, support contract, and security posture."',
+    products: ['Salesforce Platform', 'Agentforce', 'MuleSoft'],
+  },
+  {
+    name: 'Security & AI Governance',
+    abbrev: 'AI Governance',
+    category: 'security',
+    categoryLabel: '🔐 Security',
+    definition: 'The policies, controls, and technical safeguards that ensure AI systems operate safely, accurately, and in compliance with data privacy regulations. The #1 blocker for enterprise AI adoption.',
+    why: 'CIOs name security as the #1 thing keeping them up at night — and AI is intensifying it. Einstein Trust Layer addresses this with zero data retention, prompt injection protection, and complete audit trails. This is table stakes to get through IT procurement — lead with it, don\'t save it.',
+    products: ['Einstein Trust Layer', 'Salesforce Shield', 'Data Cloud'],
+  },
+  {
+    name: 'Legacy Technical Debt',
+    abbrev: 'Tech Debt',
+    category: 'simplification',
+    categoryLabel: '🧹 Simplification',
+    definition: 'The accumulated cost of previous technology decisions that now slow down new development — outdated systems, custom integrations, unsupported frameworks, and unmaintained code.',
+    why: 'CIOs know tech debt is slowing them down but often feel trapped by it. MuleSoft\'s API-led connectivity lets them decouple from legacy systems without a full rip-and-replace. Position Salesforce as "the new layer on top" — not a reason to throw away existing investments.',
+    products: ['MuleSoft', 'Salesforce Platform', 'Agentforce'],
+  },
+  {
+    name: 'Implementation & Time-to-Value',
+    abbrev: 'TTV',
+    category: 'delivery',
+    categoryLabel: '🚀 Delivery',
+    definition: 'How quickly a technology investment begins delivering measurable business value after go-live. CIOs are evaluated on delivery speed — and burned by overpromised timelines.',
+    why: 'Per Salesforce CIO research: "A partner told us a project would take 4 months — it\'s taken 14 months." Transparency on implementation timelines is non-negotiable. Lead with realistic timelines, Signature Success, and reference customers in their vertical who went live in comparable timeframes.',
+    products: ['Signature Success', 'Agentforce', 'Professional Services'],
+  },
+  {
+    name: 'IT Budget Optimization (CapEx vs. OpEx)',
+    abbrev: 'IT Budget',
+    category: 'delivery',
+    categoryLabel: '🚀 Delivery',
+    definition: 'How technology spend is classified and managed — capital expenditures (long-term assets) vs. operating expenses (recurring subscriptions). CIOs and CFOs often disagree on classification, affecting what\'s fundable.',
+    why: 'CIOs increasingly prefer OpEx models (subscriptions) that convert unpredictable project costs into predictable run rates. Salesforce\'s subscription model + AI acceleration (2x faster ROI vs. custom builds) resonates when you frame it as CapEx avoidance: "Here\'s what you would have spent building this internally."',
+    products: ['Agentforce', 'Salesforce Platform', 'TCO Analysis'],
+  },
+  {
+    name: 'Change Management & AI Adoption',
+    abbrev: 'Change Mgmt',
+    category: 'delivery',
+    categoryLabel: '🚀 Delivery',
+    definition: 'The organizational process of helping employees adapt to new technologies, processes, and ways of working. The most common reason technology projects fail — not the technology, but the adoption.',
+    why: 'CIOs in FY26 research listed "educating the org on AI while maintaining workflows" as their #3 priority (up from #5). This is your Salesforce-as-partner story — not just software but enablement, training, and change management resources that reduce adoption risk.',
+    products: ['Salesforce Trailhead', 'Signature Success', 'Agentforce'],
+  },
+];
+
+const CIO_OPENERS = [
+  {
+    question: 'When your CEO says "we need to be an AI company" — what does that actually mean for your team\'s roadmap over the next 12 months? Where do you start?',
+    why: 'Surfaces the gap between mandate and execution. Opens your "practical AI implementation, not hype" positioning.',
+  },
+  {
+    question: 'How many point solutions is your organization managing today, and what percentage of your team\'s time goes to keeping integrations working vs. building new capabilities?',
+    why: 'Almost universally painful. Opens platform consolidation and MuleSoft without you needing to pitch it.',
+  },
+  {
+    question: 'When you think about deploying AI across business teams, what\'s your biggest concern — is it more about the data foundation, the security posture, or the change management challenge?',
+    why: 'Three-part question that routes to Einstein Trust Layer, Data Cloud, or Signature Success depending on the answer.',
+  },
+  {
+    question: 'What was the last technology project that came in on time and on budget? What made that one different?',
+    why: 'Opens implementation credibility conversation. Lets them name what success looks like — then you position Signature Success as how you deliver it.',
+  },
+];
+
+const CIO_AVOID = [
+  {
+    text: 'Overpromising implementation timelines',
+    instead: 'CIOs have been burned by this. Be specific, reference comparable implementations, lead with Signature Success.',
+  },
+  {
+    text: '"We\'re the AI company" without specifics',
+    instead: 'CIOs need nuts and bolts: data readiness, deployment timeline, governance controls. Substance over aspiration.',
+  },
+  {
+    text: 'Cold outreach / generic emails',
+    instead: 'FY26 research: CIOs respond to peer referrals, Gartner/Forrester, and trusted advisors (Bain, Accenture, Deloitte). Warm intro always.',
+  },
+  {
+    text: 'Selling to the CIO without considering end users',
+    instead: 'CIOs explicitly said this is a turnoff. Always demo end-user workflows, not admin consoles. Show what the rep/agent/service team sees.',
+  },
+];
+
+const CIO_PAIN_MAP = [
+  { signal: 'Under Pressure to Deliver AI', says: '"The CEO wants AI now"', means: 'Mandate without roadmap — needs a practical starting point', solutions: ['Agentforce', 'Data Cloud', 'Einstein Trust Layer'] },
+  { signal: 'Data Not Ready for AI', says: '"Our data is a mess"', means: 'Fragmented systems; no unified data layer; AI blocked', solutions: ['Data Cloud', 'MuleSoft', 'Informatica MDM'] },
+  { signal: 'Too Many Point Solutions', says: '"We have too much tech debt"', means: 'Integration costs are consuming engineering capacity', solutions: ['Salesforce Platform', 'MuleSoft', 'Agentforce'] },
+  { signal: 'Security / AI Governance Concerns', says: '"We can\'t let AI touch customer data"', means: 'Data privacy, compliance, and prompt security are blockers', solutions: ['Einstein Trust Layer', 'Salesforce Shield', 'Data Cloud'] },
+  { signal: 'Failed / Over-Budget Implementations', says: '"Our last implementation was a disaster"', means: 'Burned by prior vendor overpromises; trust must be rebuilt', solutions: ['Signature Success', 'Professional Services', 'Phased Delivery'] },
+  { signal: 'Legacy System Lock-in', says: '"We can\'t rip and replace"', means: 'Investment in legacy creates inertia; needs additive approach', solutions: ['MuleSoft', 'Salesforce Platform', 'Agentforce'] },
+];
+
+// ── DATA: CEO ─────────────────────────────────────────────────
+const CEO_TERMS = [
+  {
+    name: 'Competitive Advantage / Market Position',
+    abbrev: 'Competitive Edge',
+    category: 'competition',
+    categoryLabel: '🏆 Competition',
+    definition: 'The capabilities, assets, or structural advantages that allow a company to outperform its peers in a given market. The CEO\'s ultimate responsibility: protecting and extending the moat.',
+    why: 'CEOs are not buying software. They\'re buying competitive advantage. Frame every Salesforce conversation as: "Your competition is moving faster because of X. Here\'s how you close or extend that gap." Use publicly available peer data — growth rates, margins, analyst reports — to make it concrete.',
+    products: ['Agentforce', 'Data Cloud', 'Manufacturing Cloud'],
+  },
+  {
+    name: 'Organic Revenue Growth',
+    abbrev: 'Organic Growth',
+    category: 'growth',
+    categoryLabel: '📈 Growth',
+    definition: 'Revenue growth generated from the company\'s existing operations and customer base — not from acquisitions. The purest signal of business health and competitive execution.',
+    why: 'If organic growth is flat or declining while a competitor is surging, the CEO is in transformation urgency mode. They need to show the board a credible plan. "How Salesforce is accelerating revenue growth for comparable companies" is your opening — not product features.',
+    products: ['Sales Cloud', 'Revenue Cloud', 'Agentforce for Sales'],
+  },
+  {
+    name: 'Digital Transformation ROI',
+    abbrev: 'Digital ROI',
+    category: 'transformation',
+    categoryLabel: '🔄 Transformation',
+    definition: 'The measurable business value delivered by technology-driven transformation initiatives — revenue growth, cost reduction, and productivity gains attributable to digital investments.',
+    why: 'CEOs approved transformation spend and now want proof it worked. Salesforce delivers $5–7 return per $1 invested over 3 years (Forrester TEI). Lead with customer stories from their exact vertical — a Medtronic or RealTruck example lands harder than abstract ROI statistics.',
+    products: ['Salesforce Platform', 'Agentforce', 'Data Cloud'],
+  },
+  {
+    name: 'Operational Excellence / "Doing More with Less"',
+    abbrev: 'Op. Excellence',
+    category: 'execution',
+    categoryLabel: '⚡ Execution',
+    definition: 'The consistent ability to execute strategy efficiently — hitting targets, managing costs, and scaling operations without proportional headcount increases. Every CEO wants it; most struggle to achieve it post-growth.',
+    why: 'CEOs under analyst or activist pressure (like Elliott at Medtronic) need an "operational excellence" story. Agentforce is the mechanism: 68% of interactions resolved without human involvement, 25–30% reduction in cost-to-serve. This is the CEO\'s "Simplify" mandate made real.',
+    products: ['Agentforce', 'Agentforce Operations', 'Einstein AI'],
+  },
+  {
+    name: 'M&A Value Creation',
+    abbrev: 'M&A Value',
+    category: 'growth',
+    categoryLabel: '📈 Growth',
+    definition: 'The ability to realize synergies and revenue upside from acquisitions quickly. Most M&A value destruction happens in the integration phase — systems fragmentation, cultural friction, and duplicated processes.',
+    why: 'For CEOs running acquisition-led growth strategies, integration speed is a competitive differentiator. The company that integrates in 6 months beats the one that takes 24. MuleSoft + Salesforce Platform compresses integration timelines from 18–24 months to 6–8.',
+    products: ['MuleSoft', 'Salesforce Platform', 'Data Cloud'],
+  },
+  {
+    name: 'Talent & Workforce Strategy',
+    abbrev: 'Workforce',
+    category: 'execution',
+    categoryLabel: '⚡ Execution',
+    definition: 'How the company attracts, develops, deploys, and retains talent in an environment where AI is changing what work looks like. CEOs are navigating "AI + humans" workforce strategy at the board level.',
+    why: 'The CEO needs an "AI + humans" story for the board, investors, and employees. Agentforce enables the narrative: "We\'re not replacing people — we\'re freeing them for higher-value work." 31,000 leads handled by Agentforce generating $1.1M in pipeline while the team focused on closing.',
+    products: ['Agentforce', 'Agentforce for Sales', 'Agentforce for Service'],
+  },
+  {
+    name: 'Board & Investor Confidence',
+    abbrev: 'Board Story',
+    category: 'transformation',
+    categoryLabel: '🔄 Transformation',
+    definition: 'The CEO\'s ability to present a credible transformation narrative to the board, institutional investors, and analysts — including a clear technology roadmap that supports the financial strategy.',
+    why: 'CEOs need to show investors a technology story that justifies valuation. "We are deploying Agentforce across our commercial operations" is a boardroom statement. Give the CEO the language and the data to tell that story — specific metrics, comparable customers, and a credible roadmap.',
+    products: ['Agentforce', 'Data Cloud', 'Salesforce BVS'],
+  },
+  {
+    name: 'Customer Experience as Strategic Moat',
+    abbrev: 'CX Strategy',
+    category: 'competition',
+    categoryLabel: '🏆 Competition',
+    definition: 'Using superior customer experience as a durable competitive advantage — making it expensive and friction-filled for customers to switch to a competitor, while increasing their spend over time.',
+    why: 'CEOs who\'ve built their brand on CX (and those whose CX is destroying it — see Medtronic/Comcast comparison) have a burning platform. Service Cloud + Agentforce for Service enables 24/7 AI-powered CX that scales without headcount. For a CEO under margin pressure, better CX at lower cost-per-interaction is the rare double win.',
+    products: ['Service Cloud', 'Agentforce for Service', 'Einstein AI'],
+  },
+];
+
+const CEO_OPENERS = [
+  {
+    question: 'When you look at what your best-performing competitor is doing operationally that you\'re not — what\'s the gap you\'re most focused on closing this year?',
+    why: 'Forces them to name the competitive gap themselves. You then map Salesforce to it — don\'t map it in advance.',
+  },
+  {
+    question: 'Your board wants a technology transformation story. What does that narrative look like today — and where is the evidence of ROI that makes it credible?',
+    why: 'Opens Digital ROI conversation. CEOs under board pressure need proof points, not vision. You have them.',
+  },
+  {
+    question: 'You\'ve described "do more with less" as a priority. Where in the business is the biggest gap between what your team is capable of and what they\'re actually spending their time on?',
+    why: 'Agentforce story: "here\'s how companies like yours are reclaiming 20–30% of rep/service team time for high-value work."',
+  },
+  {
+    question: 'When you acquired [Company X], what was your expected integration timeline vs. what actually happened — and what was the cost of that gap?',
+    why: 'For M&A-active CEOs, integration speed is a known pain. Opens MuleSoft platform story. The answer always reveals more pain than the question implies.',
+  },
+];
+
+const CEO_AVOID = [
+  {
+    text: 'Leading with product features or cloud names',
+    instead: 'CEOs buy outcomes, not software. Lead with business problems and metrics: "Companies like yours are reducing cost-to-serve by 25–30% with Agentforce."',
+  },
+  {
+    text: '"Salesforce does everything"',
+    instead: 'CEOs see through platform evangelism. Name the one or two specific bets that matter most for their business right now.',
+  },
+  {
+    text: 'Skipping discovery to give your pitch',
+    instead: 'At the CEO level, asking the right questions IS the pitch. The best CEO meetings are ones where you speak 30% of the time.',
+  },
+  {
+    text: 'Bringing an IT-level conversation',
+    instead: 'CEOs think in strategic outcomes, competitive position, and investor narrative. If your deck has screenshots, you\'re in the wrong meeting.',
+  },
+];
+
+const CEO_PAIN_MAP = [
+  { signal: 'Competitor Growing Faster', says: '"We need to move faster"', means: 'Competitive pressure creating strategic urgency', solutions: ['Agentforce', 'Sales Cloud', 'Data Cloud'] },
+  { signal: 'Board / Activist Pressure on Margins', says: '"We need to do more with less"', means: 'Operational cost structure must improve without sacrificing growth', solutions: ['Agentforce Operations', 'Agentforce', 'Einstein AI'] },
+  { signal: 'Stalled Digital Transformation', says: '"We haven\'t gotten the ROI we expected"', means: 'Prior transformation spend not delivering measurable results', solutions: ['Salesforce BVS', 'Agentforce', 'Signature Success'] },
+  { signal: 'M&A Integration Complexity', says: '"Integration is taking longer than expected"', means: 'Systems fragmentation destroying acquisition synergies', solutions: ['MuleSoft', 'Salesforce Platform', 'Data Cloud'] },
+  { signal: 'Talent Cost / Headcount Pressure', says: '"We can\'t keep adding headcount to scale"', means: 'Labor cost growth unsustainable; automation is the answer', solutions: ['Agentforce', 'Agentforce for Sales', 'Agentforce for Service'] },
+  { signal: 'Customer Experience Lagging', says: '"Our customers aren\'t as satisfied as they should be"', means: 'Service quality falling behind scale; NPS / CSAT declining', solutions: ['Service Cloud', 'Agentforce for Service', 'Einstein AI'] },
+];
+
+// ── RENDER: PERSONA PAGES ─────────────────────────────────────
+function renderPersonaPage(gridId, terms, openersId, openers, avoidId, avoids, painTableId, painMap, personaKey) {
+  // Terms grid
+  document.getElementById(gridId).innerHTML = terms.map(term => `
+    <div class="term-card cat-${term.category}" data-category="${term.category}" data-persona="${personaKey}" tabindex="0">
+      <div class="term-card-header">
+        <div>
+          <span class="term-category-badge">${term.categoryLabel}</span>
+          <div class="term-name">${term.name}</div>
+        </div>
+        <span class="term-abbrev">${term.abbrev}</span>
+      </div>
+      <p class="term-definition">${term.definition}</p>
+      <div class="term-why">
+        <div class="term-why-label">⚡ Why it matters for you</div>
+        <div class="term-why-text">${term.why}</div>
+      </div>
+      <div class="term-products">
+        ${term.products.map(p => `<span class="product-tag">${p}</span>`).join('')}
+      </div>
+    </div>
+  `).join('');
+
+  // Openers
+  document.getElementById(openersId).innerHTML = openers.map(o => `
+    <div class="opener-item">
+      <div class="opener-question">"${o.question}"</div>
+      <div class="opener-why">↳ ${o.why}</div>
+    </div>
+  `).join('');
+
+  // Avoids
+  document.getElementById(avoidId).innerHTML = avoids.map(a => `
+    <div class="avoid-item">
+      <span class="avoid-x">✗</span>
+      <div>
+        <div class="avoid-text">${a.text}</div>
+        <div class="avoid-instead">✓ Instead: ${a.instead}</div>
+      </div>
+    </div>
+  `).join('');
+
+  // Pain map table
+  document.getElementById(painTableId).innerHTML = `
+    <thead>
+      <tr>
+        <th>Pain Signal</th>
+        <th>What They Say</th>
+        <th>What They Mean</th>
+        <th>Salesforce Solution</th>
+      </tr>
+    </thead>
+    <tbody>
+      ${painMap.map(row => `
+        <tr>
+          <td class="pain-signal-cell"><span class="signal-indicator"></span>${row.signal}</td>
+          <td class="pain-what-they-say">${row.says}</td>
+          <td class="pain-what-they-mean">${row.means}</td>
+          <td><div class="pain-solutions">${row.solutions.map(s => `<span class="pain-solution-tag">${s}</span>`).join('')}</div></td>
+        </tr>
+      `).join('')}
+    </tbody>
+  `;
+}
+
+// ── PERSONA FILTER LOGIC ──────────────────────────────────────
+document.querySelectorAll('.filter-btn[data-filter-persona]').forEach(btn => {
+  btn.addEventListener('click', () => {
+    const persona = btn.dataset.filterPersona;
+    const filter = btn.dataset.filter;
+    const container = btn.closest('.category-filter');
+    container.querySelectorAll('.filter-btn').forEach(b => b.classList.remove('active'));
+    btn.classList.add('active');
+    document.querySelectorAll(`.term-card[data-persona="${persona}"]`).forEach(card => {
+      card.style.display = (filter === 'all' || card.dataset.category === filter) ? '' : 'none';
+    });
+  });
+});
+
 // ── INIT ─────────────────────────────────────────────────────
 renderCheatSheet();
 renderTenkPage();
 renderPainMapper();
+renderPersonaPage('sc-grid', SC_TERMS, 'sc-openers', SC_OPENERS, 'sc-avoid', SC_AVOID, 'sc-pain-table', SC_PAIN_MAP, 'sc');
+renderPersonaPage('cmo-grid', CMO_TERMS, 'cmo-openers', CMO_OPENERS, 'cmo-avoid', CMO_AVOID, 'cmo-pain-table', CMO_PAIN_MAP, 'cmo');
+renderPersonaPage('cio-grid', CIO_TERMS, 'cio-openers', CIO_OPENERS, 'cio-avoid', CIO_AVOID, 'cio-pain-table', CIO_PAIN_MAP, 'cio');
+renderPersonaPage('ceo-grid', CEO_TERMS, 'ceo-openers', CEO_OPENERS, 'ceo-avoid', CEO_AVOID, 'ceo-pain-table', CEO_PAIN_MAP, 'ceo');
