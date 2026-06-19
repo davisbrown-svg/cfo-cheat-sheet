@@ -7,7 +7,7 @@ const jsforce = require('jsforce');
 const app = express();
 app.use(cors());
 app.use(express.json());
-app.use(express.static(path.join(__dirname, 'public')));
+app.use(express.static(path.join(__dirname, 'docs')));
 
 // Salesforce connection
 let sfConn = null;
@@ -266,7 +266,7 @@ function getTenKSignals(accountId) {
 
 // Serve the SPA for all other routes
 app.get('*', (req, res) => {
-  res.sendFile(path.join(__dirname, 'public', 'index.html'));
+  res.sendFile(path.join(__dirname, 'docs', 'index.html'));
 });
 
 const PORT = process.env.PORT || 3000;
